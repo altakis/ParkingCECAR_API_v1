@@ -17,7 +17,13 @@ class Detector:
         detection = self.detector.detect_objects(
             model_name, url_input, image_input, webcam_input, threshold
         )
-        original_file_name = getFileName(fs_location)
+        
+        #save original file name
+        for x in fs_location:
+            print('---------------------')
+            print(f'arg: {x}')
+        print('---------------------')
+        original_file_name = self.getFileName(image_path=fs_location)
         detection["file_name"] = original_file_name
 
         # Create base64 strings from detection
@@ -36,8 +42,9 @@ class Detector:
         }
         return payload
     
-    def getFileName(fs_location: str):
-        image_path = fs_location
+    def getFileName(image_path: str): 
+        for x in image_path:
+            print(f'arg: {x}')       
         try:
             file_name = image_path.split('\\')[-1]
         except:
