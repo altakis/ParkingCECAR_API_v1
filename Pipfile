@@ -14,6 +14,8 @@ timm = "*"
 easyocr = "*"
 opencv-python = "*"
 djangorestframework = "*"
+python-dotenv = "*"
+matplotlib = "*"
 
 [dev-packages]
 

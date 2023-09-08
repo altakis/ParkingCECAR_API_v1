@@ -1,4 +1,45 @@
-from license_detector import license_detector
-from FileManagerUtil import FileManagerUtil
+from .license_detector import license_detector
+from PIL import Image
+from . import base64_utils
 
-detector = license_detector()
+
+class Detector:
+    detector = license_detector()
+
+    def detect_license_from_fs_location(self, fs_location, options=None):
+        # load data
+        model_name = ""
+        url_input = None
+        image_input = None
+        webcam_input = Image.open(fs_location)
+        threshold = 0.5
+
+        detection = self.detector.detect_objects(
+            model_name, url_input, image_input, webcam_input, threshold
+        )
+        original_file_name = getFileName(fs_location)
+        detection["file_name"] = original_file_name
+
+        # Create base64 strings from detection
+        pred_json_base64 = None
+        crop_json_base64 = None
+        if options:
+            if options.get("pred_json_base64") == True:
+                pred_json_base64 = base64_utils.encode(payload.get("pred_loc"))
+            if options.get("crop_json_base64") == True:
+                crop_json_base64 = base64_utils.encode(payload.get("crop_loc"))
+
+        payload = {
+            "detection": detection,
+            "pred_json_base64": pred_json_base64,
+            "crop_json_base64": crop_json_base64,
+        }
+        return payload
+    
+    def getFileName(fs_location: str):
+        image_path = fs_location
+        try:
+            file_name = image_path.split('\\')[-1]
+        except:
+            file_name = image_path.split('/')[-1]
+        return file_name

@@ -7,12 +7,11 @@ class DetectionSerializer(serializers.ModelSerializer):
         model = Detection
         fields = [
             "record_name",
-            "time_stamp_creation",
+            "time_stamp",
+            "file_name",
             "pred_loc",
             "crop_loc",
             "processing_time_pred",
             "processing_time_ocr",
             "ocr_text_result",
-            "pred_json_bin",
-            "crop_json_bin",
         ]

@@ -1,5 +1,5 @@
 import time
-import asyncio
+import datetime
 import io
 import matplotlib.pyplot as plt
 import requests, validators
@@ -10,16 +10,13 @@ from transformers import (
     YolosForObjectDetection,
     DetrForObjectDetection,
 )
-from FileManagerUtil import FileManagerUtil
-import db_operator
-import sql_app.schemas as schemas
+from .FileManagerUtil import FileManagerUtil
 
 # Initialize the OCR reader
 import easyocr
 import cv2
 from numpy import asarray
 
-reader = easyocr.Reader(["en"], gpu=False)
 
 # colors for visualization
 COLORS = [
@@ -38,14 +35,15 @@ class license_detector:
         "nickmuchi/detr-resnet50-license-plate-detection",
         "nickmuchi/yolos-small-rego-plates-detection",
     ]
+    _default_model = "nickmuchi/yolos-small-finetuned-license-plate-detection"
+    _reader = easyocr.Reader(["en"], gpu=False, verbose=False)
 
     def __init__(self, model="") -> None:
         siu = FileManagerUtil()
         self.save_img_util = siu
-        self._default_model = "nickmuchi/yolos-small-finetuned-license-plate-detection"
 
         if len(model) == 0:
-            self._model = self._default_model
+            self._model = license_detector._default_model
         else:
             self._model = model
 
@@ -56,13 +54,13 @@ class license_detector:
         if model in license_detector._models:
             self._model = model
         else:
-            self._model = self._default_model
+            self._model = license_detector._default_model
 
     def verifyModel(self, model):
         if len(model) == 0:
-            model = self._model
+            self._model = license_detector._default_model
         else:
-            self.setModelName(model)            
+            self.setModelName(model)
         return self.getCurrentModel()
 
     def make_prediction(self, img, feature_extractor, model):
@@ -145,7 +143,7 @@ class license_detector:
             license_plate_crop_gray, 64, 255, cv2.THRESH_BINARY_INV
         )
 
-        detections = reader.readtext(license_plate_crop_gray)
+        detections = self._reader.readtext(license_plate_crop_gray)
 
         for detection in detections:
             bbox, text, score = detection
@@ -162,13 +160,13 @@ class license_detector:
 
             return image
 
-    async def detect_objects(
+    def detect_objects(
         self, model_name, url_input, image_input, webcam_input, threshold
     ):
         # Time process
-        start_time = time.perf_counter()
+        start_time_detection = time.perf_counter()
 
-        model = self.verifyModel(model_name)
+        model_name = self.verifyModel(model_name)
 
         # Extract model and feature extractor
         feature_extractor = AutoFeatureExtractor.from_pretrained(model_name)
@@ -199,30 +197,37 @@ class license_detector:
         viz_img, crop_img, crop_error = self.visualize_prediction(
             image, processed_outputs, threshold, model.config.id2label
         )
+        detection_process_time = time.perf_counter() - start_time_detection
 
         # save img results
         self.save_img_util.initialize_folders()
-        img_ori_name, img_crop_name = self.save_img_util.save_img_results(
-            viz_img, crop_img
-        )
+        (
+            img_ori_name,
+            img_crop_name,
+            img_ori_loc,
+            img_crop_loc,
+        ) = self.save_img_util.save_img_results(viz_img, crop_img)
 
+        start_time_ocr = time.perf_counter()
         # OCR license plate
         # TODO: OCR is too slow and frankly useless as the camera quality simply doesn't allow a good enough capture
-        license_text, license_text_score = '', ''
+        license_text, license_text_score = "", ""
         if crop_error == 0:
             license_text, license_text_score = self.read_license_plate(crop_img)
         else:
             license_text, license_text_score = "ERROR", 0
 
-        # Time out and save to db
-        process_time = time.perf_counter() - start_time
-        data = schemas.DetectionBase(
-            original_image_name=img_ori_name,
-            crop_image_name=img_crop_name,
-            license_plate_data=f"{license_text}:{license_text_score}",
-            wall_time=process_time,
-        )
-        result = await db_operator.create_detection(detection_request=data)
-        print(result)
+        # Time out and send data
+        ocr_process_time = time.perf_counter() - start_time_ocr
+        time_stamp = datetime.datetime.now()
+        data = {
+            "record_name": f"{time_stamp}_{img_ori_name}",
+            "time_stamp": time_stamp,            
+            "pred_loc": img_ori_loc,
+            "crop_loc": img_crop_loc,
+            "ocr_text_result": f"{license_text}:{license_text_score}",
+            "processing_time_pred": round(detection_process_time, 20),
+            "processing_time_ocr": round(ocr_process_time, 20),
+        }
 
-        return viz_img, crop_img
+        return data

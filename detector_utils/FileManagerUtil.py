@@ -12,7 +12,7 @@ class FileManagerUtil:
 
     def initialize_folders(self):
         for path in self._folders:
-            print(path)
+            #print(path)
             isExist = os.path.exists(path)
             if not isExist:
                 os.makedirs(path)
@@ -22,6 +22,11 @@ class FileManagerUtil:
         dt_string = now.strftime("%d_%m_%Y__%H_%M_%S")
         img_ori_name = f"{dt_string}_ori.png"
         img_crop_name = f"{dt_string}_crop.png"
-        img_visualization.save(os.path.join(self._img_folder, img_ori_name), "png")
-        img_crop.save(os.path.join(self._crop_folder, img_crop_name), "png")
-        return img_ori_name, img_crop_name
+
+        img_ori_loc = os.path.join(self._img_folder, img_ori_name)
+        img_crop_loc = os.path.join(self._crop_folder, img_crop_name)
+
+        img_visualization.save(img_ori_loc, "png")
+        img_crop.save(img_crop_loc, "png")
+
+        return img_ori_name, img_crop_name, img_ori_loc, img_crop_loc
