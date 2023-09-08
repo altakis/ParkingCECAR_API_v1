@@ -1,6 +1,7 @@
 from .license_detector import license_detector
 from PIL import Image
 from . import base64_utils
+import os
 
 
 class Detector:
@@ -19,9 +20,13 @@ class Detector:
         )
 
         # save original file name
-        #original_file_name_as_string = str()
-        original_file_name = self.getFileName(image_path=rf"{fs_location}")
-        detection["file_name"] = fs_location
+        # Normalize the path to use the appropriate path separator for the current OS
+        normalized_path = os.path.normpath(fs_location)
+
+        # Split the path to get the filename
+        filename = os.path.basename(normalized_path)
+
+        detection["file_name"] = filename
 
         # Create base64 strings from detection
         pred_json_base64 = None
@@ -39,9 +44,11 @@ class Detector:
         }
         return payload
 
-    def getFileName(image_path):
-        try:
-            file_name = image_path.split("\\")[-1]
-        except:
-            file_name = image_path.split("/")[-1]
-        return file_name
+    def extract_file_name(image_path):
+        # Normalize the path to use the appropriate path separator for the current OS
+        normalized_path = os.path.normpath(path_string)
+
+        # Split the path to get the filename
+        filename = os.path.basename(normalized_path)
+
+        return filename

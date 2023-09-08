@@ -31,9 +31,9 @@ def detection_detect(request, format=None):
     )      
     #print(f'payload: {payload}')
     serializer = DetectionSerializer(data=payload.get("detection"))
-    print(f'serializer: valid? {serializer.is_valid()}')
+    """ print(f'serializer: valid? {serializer.is_valid()}')
     print(serializer.errors)
-    print(serializer.validated_data)
+    print(serializer.validated_data) """
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

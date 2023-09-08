@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "95219c21bafe36c673341879f9053799d69a7ba852bcb03810fea228c5ce19ee"
+            "sha256": "b1009fbe2dc801bdc317895b6550cb87f12d5306a21e718a8e8b18f537ba7519"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,21 +23,6 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==3.7.2"
-        },
-        "beautifulsoup4": {
-            "hashes": [
-                "sha256:492bbc69dca35d12daac71c4db1bfff0c876c00ef4a2ffacce226d4638eb72da",
-                "sha256:bd2520ca0d9d7d12694a53d44ac482d181b4ec1888909b035a3dbf40d0f57d4a"
-            ],
-            "index": "pypi",
-            "version": "==4.12.2"
-        },
-        "bs4": {
-            "hashes": [
-                "sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a"
-            ],
-            "index": "pypi",
-            "version": "==0.0.1"
         },
         "certifi": {
             "hashes": [
@@ -1152,14 +1137,6 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
         },
-        "soupsieve": {
-            "hashes": [
-                "sha256:5663d5a7b3bfaeee0bc4372e7fc48f9cff4940b3eec54a6451cc5299f1097690",
-                "sha256:eaa337ff55a1579b6549dc679565eac1e3d000563bcb1c8ab0d0fefbc0c2cdc7"
-            ],
-            "markers": "python_version >= '3.8'",
-            "version": "==2.5"
-        },
         "sqlparse": {
             "hashes": [
                 "sha256:5430a4fe2ac7d0f93e66f1efc6e1338a41884b7ddf2a350cedd20ccc4d9d28f3",
@@ -1183,14 +1160,6 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==2023.8.30"
-        },
-        "timm": {
-            "hashes": [
-                "sha256:1cf1082007aa1353550921804abe292292d51acc8631a140273f81f29b48059f",
-                "sha256:2bfb1029e90b72e65eb9c75556169815f2e82257eaa1f6ebd623a4b4a52867a2"
-            ],
-            "index": "pypi",
-            "version": "==0.9.7"
         },
         "tokenizers": {
             "hashes": [
