@@ -19,6 +19,8 @@ class Detector:
         )
 
         # save original file name
+        #original_file_name_as_string = str()
+        original_file_name = self.getFileName(image_path=rf"{fs_location}")
         detection["file_name"] = fs_location
 
         # Create base64 strings from detection
@@ -36,3 +38,10 @@ class Detector:
             "crop_json_base64": crop_json_base64,
         }
         return payload
+
+    def getFileName(image_path):
+        try:
+            file_name = image_path.split("\\")[-1]
+        except:
+            file_name = image_path.split("/")[-1]
+        return file_name
