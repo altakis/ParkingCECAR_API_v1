@@ -54,7 +54,7 @@ def detection_detail(request, id, format=None):
         serializer = DetectionSerializer(detection, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            Response(serializer.data)
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     if request.method == "DELETE":
         print(detection.delete())
@@ -77,7 +77,7 @@ def detection_detail_name(request, file_name, format=None):
         serializer = DetectionSerializer(detection, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            Response(serializer.data)
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     if request.method == "DELETE":
         print(detection.delete())
