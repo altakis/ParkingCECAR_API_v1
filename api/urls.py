@@ -22,5 +22,6 @@ from rest_framework.urlpatterns import format_suffix_patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("detections/", views.detection_endpoints),    
-    #path("detections/<int:id>", views.detection_detail),
+    path("detections/<int:id>", views.detection_detail),
+    path("detections/?file_name=<str:file_name>", views.detection_detail_name),
 ]

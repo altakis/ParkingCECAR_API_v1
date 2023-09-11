@@ -6,6 +6,7 @@ class DetectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Detection
         fields = [
+            "id",
             "record_name",
             "time_stamp",
             "file_name",

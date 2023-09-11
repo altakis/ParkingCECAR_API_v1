@@ -28,8 +28,8 @@ def detection_detect(request, format=None):
     detector_ins = detector_interface.Detector()
     payload = detector_ins.detect_license_from_fs_location(
         fs_location=data["data"]["src_file"]
-    )      
-    #print(f'payload: {payload}')
+    )
+    # print(f'payload: {payload}')
     serializer = DetectionSerializer(data=payload.get("detection"))
     """ print(f'serializer: valid? {serializer.is_valid()}')
     print(serializer.errors)
@@ -37,9 +37,48 @@ def detection_detect(request, format=None):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response({"message": "error"}, status=status.HTTP_204_NO_CONTENT)
+    # return Response({"message": "error"}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(http_method_names=["GET", "PUT", "DELETE"])
 def detection_detail(request, id, format=None):
-    pass
+    try:
+        detection = Detection.objects.get(pk=id)
+    except Detection.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializer = DetectionSerializer(detection)
+        return Response(serializer.data)
+    elif request.method == "PUT":
+        serializer = DetectionSerializer(detection, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "DELETE":
+        print(detection.delete())
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(http_method_names=["GET", "PUT", "DELETE"])
+def detection_detail_name(request, file_name, format=None):
+    try:
+        detection = Detection.objects.filter(file_name_containts=file_name)
+    except Detection.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializer = DetectionSerializer(detection)
+        return Response(serializer.data)
+    ###
+    # TODO: check if needed or simply let this be a query method and let the other operations be performed by the id endpoint
+    pending = """ elif request.method == "PUT":
+        serializer = DetectionSerializer(detection, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "DELETE":
+        print(detection.delete())
+        return Response(status=status.HTTP_204_NO_CONTENT) """
