@@ -10,8 +10,11 @@ import torch
 import validators
 from numpy import asarray
 from PIL import Image
-from transformers import (AutoFeatureExtractor, DetrForObjectDetection,
-                          YolosForObjectDetection)
+from transformers import (
+    AutoFeatureExtractor,
+    DetrForObjectDetection,
+    YolosForObjectDetection,
+)
 
 from . import FileManagerUtil
 
@@ -36,9 +39,6 @@ class license_detector:
     _reader = easyocr.Reader(["en"], gpu=False, verbose=False)
 
     def __init__(self, model="") -> None:
-        siu = FileManagerUtil()
-        self.save_img_util = siu
-
         if len(model) == 0:
             self._model = license_detector._default_model
         else:
@@ -60,12 +60,11 @@ class license_detector:
             self.setModelName(model)
         return self.getCurrentModel()
 
-    def make_prediction(self, img, feature_extractor, model):
-        inputs = feature_extractor(img, return_tensors="pt")
-        outputs = model(**inputs)
-        img_size = torch.tensor([tuple(reversed(img.size))])
-        processed_outputs = feature_extractor.post_process(outputs, img_size)
-        return processed_outputs[0]
+    def get_original_image(self, url_input):
+        if validators.url(url_input):
+            image = Image.open(requests.get(url_input, stream=True).raw)
+
+            return image
 
     def fig2img(self, fig):
         buf = io.BytesIO()
@@ -77,6 +76,13 @@ class license_detector:
         hsize = int((float(pil_img.size[1]) * float(wpercent)))
         img = pil_img.resize((basewidth, hsize), Image.Resampling.LANCZOS)
         return img
+
+    def make_prediction(self, img, feature_extractor, model):
+        inputs = feature_extractor(img, return_tensors="pt")
+        outputs = model(**inputs)
+        img_size = torch.tensor([tuple(reversed(img.size))])
+        processed_outputs = feature_extractor.post_process(outputs, img_size)
+        return processed_outputs[0]
 
     def visualize_prediction(self, img, output_dict, threshold=0.5, id2label=None):
         keep = output_dict["scores"] > threshold
@@ -151,11 +157,20 @@ class license_detector:
 
         return None, None
 
-    def get_original_image(self, url_input):
-        if validators.url(url_input):
-            image = Image.open(requests.get(url_input, stream=True).raw)
+    def get_ocr_output(self, crop_img: Image.Image, crop_error: int):
+        start_time_ocr = time.perf_counter()
+        # OCR license plate
+        # TODO: OCR is too slow and frankly useless as the camera quality simply doesn't allow a good enough capture
+        license_text, license_text_score = "", ""
+        if crop_error == 0:
+            license_text, license_text_score = self.read_license_plate(crop_img)
+        else:
+            license_text, license_text_score = "ERROR", 0
 
-            return image
+        # Time out OCR
+        ocr_process_time = time.perf_counter() - start_time_ocr
+
+        return license_text, license_text_score, ocr_process_time
 
     def detect_objects(
         self, model_name, url_input, image_input, webcam_input, threshold
@@ -196,35 +211,18 @@ class license_detector:
         )
         detection_process_time = time.perf_counter() - start_time_detection
 
-        # save img results
-        self.save_img_util.initialize_folders()
-        (
-            img_ori_name,
-            img_crop_name,
-            img_ori_loc,
-            img_crop_loc,
-        ) = self.save_img_util.save_img_results(viz_img, crop_img)
-
-        start_time_ocr = time.perf_counter()
-        # OCR license plate
-        # TODO: OCR is too slow and frankly useless as the camera quality simply doesn't allow a good enough capture
-        license_text, license_text_score = "", ""
-        if crop_error == 0:
-            license_text, license_text_score = self.read_license_plate(crop_img)
-        else:
-            license_text, license_text_score = "ERROR", 0
-
-        # Time out OCR
-        ocr_process_time = time.perf_counter() - start_time_ocr
+        license_text, license_text_score, ocr_process_time = get_ocr_output(
+            crop_img, crop_error
+        )
 
         # package data and return
         time_stamp = datetime.datetime.now()
         data = {
-            "record_name": f"{time_stamp}_{img_ori_name}",
-            "time_stamp": time_stamp,            
-            "pred_loc": img_ori_loc,
-            "crop_loc": img_crop_loc,
-            "ocr_text_result": f"{license_text}:{license_text_score}",
+            "record_name": f"{time_stamp}_",
+            "time_stamp": time_stamp,
+            "viz_img": viz_img,
+            "crop_img": crop_img,
+            "ocr_text_result": f"[ {license_text} ] : [{license_text_score}]",
             "processing_time_pred": round(detection_process_time, 20),
             "processing_time_ocr": round(ocr_process_time, 20),
         }

@@ -2,12 +2,18 @@ import os
 
 from PIL import Image
 
-from . import base64_utils
-from . import license_detector
+from . import base64_utils, license_detector, FileManagerUtil
 
 
 class Detector:
-    detector = license_detector.license_detector()
+    def __init__(self):
+        # load license_detector
+        detector_obj = license_detector.license_detector()
+        self.detector = detector_obj
+
+        # load fs utilities
+        siu = FileManagerUtil()
+        self.save_img_util = siu
 
     def detect_license_from_fs_location(self, fs_location, options=None):
         # load data
@@ -29,6 +35,21 @@ class Detector:
         filename = os.path.basename(normalized_path)
 
         detection["file_name"] = filename
+
+        # save img results
+        self.save_img_util.initialize_folders()
+        (
+            img_ori_name,
+            img_crop_name,
+            img_ori_loc,
+            img_crop_loc,
+        ) = self.save_img_util.save_img_results(
+            detection.get("viz_img"), detection.get("crop_img")
+        )
+
+        # Package according to data Detector model object
+        detection["pred_loc"] = img_ori_loc
+        detection["crop_loc"] = img_crop_loc
 
         # Create base64 strings from detection
         pred_json_base64 = None
