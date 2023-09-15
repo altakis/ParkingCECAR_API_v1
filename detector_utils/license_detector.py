@@ -1,22 +1,19 @@
-import time
 import datetime
 import io
-import matplotlib.pyplot as plt
-import requests, validators
-import torch
-from PIL import Image
-from transformers import (
-    AutoFeatureExtractor,
-    YolosForObjectDetection,
-    DetrForObjectDetection,
-)
-from .FileManagerUtil import FileManagerUtil
+import time
 
-# Initialize the OCR reader
-import easyocr
 import cv2
+import easyocr
+import matplotlib.pyplot as plt
+import requests
+import torch
+import validators
 from numpy import asarray
+from PIL import Image
+from transformers import (AutoFeatureExtractor, DetrForObjectDetection,
+                          YolosForObjectDetection)
 
+from .FileManagerUtil import FileManagerUtil
 
 # colors for visualization
 COLORS = [

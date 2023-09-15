@@ -1,11 +1,12 @@
-from .license_detector import license_detector
-from PIL import Image
-from . import base64_utils
 import os
+
+import base64_utils
+import license_detector
+from PIL import Image
 
 
 class Detector:
-    detector = license_detector()
+    detector = license_detector.license_detector()
 
     def detect_license_from_fs_location(self, fs_location, options=None):
         # load data

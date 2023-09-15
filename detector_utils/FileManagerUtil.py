@@ -1,6 +1,7 @@
 import os
-from PIL import Image
 from datetime import datetime
+
+from PIL import Image
 
 
 class FileManagerUtil:

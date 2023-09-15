@@ -25,5 +25,5 @@ class Detection(models.Model):
 
     def __str__(self) -> str:
         return (
-            f"record: {self.record_name} {self.time_stamp_creation} ocr:{self.ocr_text_result} processing_time_pred: {self.processing_time_pred} processing_time_ocr: {self.processing_time_ocr}"
+            f"record: {self.record_name} || time_stamp:{self.time_stamp} || filename: {self.file_name} || ocr:{self.ocr_text_result}"
         )

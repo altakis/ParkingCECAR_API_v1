@@ -1,10 +1,12 @@
 from django.http import JsonResponse
-from .models import Detection
-from .serializers import DetectionSerializer
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
+
 from detector_utils import detector_interface
+
+from .models import Detection
+from .serializers import DetectionSerializer
 
 
 @api_view(http_method_names=["GET", "POST"])

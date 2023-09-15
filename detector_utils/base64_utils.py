@@ -1,7 +1,8 @@
-from typing import Union
-from PIL import Image
-from io import BytesIO
 import base64
+from io import BytesIO
+from typing import Union
+
+from PIL import Image
 
 
 def encode(source_image: Union[str, Image.Image]) -> str:
