@@ -1,10 +1,11 @@
-import models
 from rest_framework import serializers
+
+from .models import Detection
 
 
 class DetectionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Detection
+        model = Detection
         fields = [
             "id",
             "record_name",

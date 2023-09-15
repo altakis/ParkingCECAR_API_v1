@@ -214,8 +214,10 @@ class license_detector:
         else:
             license_text, license_text_score = "ERROR", 0
 
-        # Time out and send data
+        # Time out OCR
         ocr_process_time = time.perf_counter() - start_time_ocr
+
+        # package data and return
         time_stamp = datetime.datetime.now()
         data = {
             "record_name": f"{time_stamp}_{img_ori_name}",
