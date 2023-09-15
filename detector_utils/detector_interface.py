@@ -2,7 +2,9 @@ import os
 
 from PIL import Image
 
-from . import base64_utils, license_detector, FileManagerUtil
+from . import base64_utils
+from . import FileManagerUtil
+from . import license_detector
 
 
 class Detector:
@@ -12,7 +14,7 @@ class Detector:
         self.detector = detector_obj
 
         # load fs utilities
-        siu = FileManagerUtil()
+        siu = FileManagerUtil.FileManagerUtil()
         self.save_img_util = siu
 
     def detect_license_from_fs_location(self, fs_location, options=None):
@@ -48,6 +50,9 @@ class Detector:
         )
 
         # Package according to data Detector model object
+        current_record_name = detection.get("record_name")
+        full_record_name = f"{current_record_name}{filename}"
+        detection["record_name"] = full_record_name
         detection["pred_loc"] = img_ori_loc
         detection["crop_loc"] = img_crop_loc
 

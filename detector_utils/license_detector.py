@@ -211,7 +211,7 @@ class license_detector:
         )
         detection_process_time = time.perf_counter() - start_time_detection
 
-        license_text, license_text_score, ocr_process_time = get_ocr_output(
+        license_text, license_text_score, ocr_process_time = self.get_ocr_output(
             crop_img, crop_error
         )
 
