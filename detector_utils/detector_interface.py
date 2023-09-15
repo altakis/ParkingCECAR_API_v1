@@ -2,8 +2,8 @@ import os
 
 from PIL import Image
 
-import detector_utils.base64_utils as base64_utils
-import detector_utils.license_detector as license_detector
+from . import base64_utils
+from . import license_detector
 
 
 class Detector:

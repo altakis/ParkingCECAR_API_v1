@@ -13,7 +13,7 @@ from PIL import Image
 from transformers import (AutoFeatureExtractor, DetrForObjectDetection,
                           YolosForObjectDetection)
 
-from .FileManagerUtil import FileManagerUtil
+from . import FileManagerUtil
 
 # colors for visualization
 COLORS = [
