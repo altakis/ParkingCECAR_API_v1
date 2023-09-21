@@ -32,16 +32,24 @@ python -m manage runserver
 ```
 
 ## Notas
-De momento solo existen dos endpoints:
-GET:
-http://127.0.0.1:8000/detections/
+De momento estan implementados los siguientes endpoints:
+GET http://127.0.0.1:8000/detections/
+Retorna una lista completa de las detecciones existentes en la base de datos.
 
-Este retorno una lista completa de las detecciones existentes en la base de datos.
+GET http://127.0.0.1:8000/detections/{id}
+Retorna una deteccion en especifico en base a su {id} de base de datos.
 
-POST:
-http://127.0.0.1:8000/detections/
+GET http://127.0.0.1:8000/detections/{name}
+Retorna una lista de detecciones cuyo nombre de registro {record_name} conside con la cadena {name} proveida.
 
-Este crea una deteccion utilizando el siguiente formato como fuente:
+PUT http://127.0.0.1:8000/detections/{id}
+Ejecuta una actualizacion sobre los datos de un registro especifico y retorna el resultado de operacion.
+
+DELETE http://127.0.0.1:8000/detections/{id}
+Ejecuta una eliminacion de un registro especifico y retorna el resultado de operacion.
+
+POST http://127.0.0.1:8000/detections/
+Crea una deteccion utilizando el siguiente formato como fuente y retorna su resultado de operacion:
 
 ```javascript
 {
